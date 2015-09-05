@@ -22,6 +22,7 @@ add_executable(
     test
     test/dft.cpp
     test/convolution.cpp
+    test/fft.cpp
 )
 target_link_libraries(test gtest gtest_main fft)
 

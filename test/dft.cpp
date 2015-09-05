@@ -8,6 +8,13 @@
 
 struct DftTest : ::testing::Test {};
 
+TEST_F(DftTest, check_dft_single_element)
+{
+    auto vals = generate(1);
+    auto converted = dft::real(dft::dft(vals));
+    ASSERT_NO_FATAL_FAILURE(equal(vals, converted));
+}
+
 TEST_F(DftTest, check_dft_with_inverse_finishes_the_same)
 {
     auto vals = generate();

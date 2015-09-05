@@ -21,7 +21,7 @@ std::vector<T> naive_convolve(std::vector<T> first, std::vector<T> second)
 TEST(ConvolutionTest, simple_1d_convolution)
 {
     auto vals = generate(100);
-    auto filter = generate(10);
+    auto filter = generate(12);
 
     auto expected = naive_convolve(vals, filter);
     auto result = convolution::convolve(vals, filter);

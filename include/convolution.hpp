@@ -15,7 +15,7 @@ std::vector<T> convolve(std::vector<T> first,
     first.resize(first.size() + second.size(), T());
     second.resize(first.size(), T());
     std::reverse(second.begin(), second.end());
-    std::rotate(second.begin(), second.begin() + second.size() - 1, second.end());
+    std::rotate(second.begin(), second.end() - 1, second.end());
 
     auto freq_first = dft::dft(first);
     auto freq_second = dft::dft(second);
