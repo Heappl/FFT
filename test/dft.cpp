@@ -1,32 +1,12 @@
 #include <gtest/gtest.h>
 #include "dft.hpp"
+#include "generator.hpp"
+#include "equality_checks.hpp"
 #include <cmath>
-#include <random>
 #include <algorithm>
 #include <limits>
 
-struct DftTest : ::testing::Test
-{
-    std::mt19937 rd;
-    std::uniform_real_distribution<double> dist;
-
-    DftTest() : rd(), dist(-100, 100) {}
-
-    std::vector<double> generate(size_t size = 100)
-    {
-        std::vector<double> ret(size);
-        for (auto& elem : ret) elem = dist(rd);
-        return ret;
-    }
-
-    void equal(std::vector<double> expected,
-               std::vector<double> result)
-    {
-        ASSERT_EQ(expected.size(), result.size());
-        for (auto i = 0u; i < expected.size(); ++i)
-            ASSERT_FLOAT_EQ(expected[i], result[i]) << "elem of index: " << i;
-    }
-};
+struct DftTest : ::testing::Test {};
 
 TEST_F(DftTest, check_dft_with_inverse_finishes_the_same)
 {
@@ -52,7 +32,7 @@ TEST_F(DftTest, check_dft_parsevals_property)
         freq_domain_sum += X[i] * std::conj(Y[i]);
     freq_domain_sum /= double(X.size());
 
-    ASSERT_TRUE(abs(time_domain_sum - freq_domain_sum) < 1.0e-14 * abs(time_domain_sum));
+    ASSERT_TRUE(abs(time_domain_sum - freq_domain_sum) < 1.0e-13 * abs(time_domain_sum));
 }
 
 TEST_F(DftTest, check_convolution)
