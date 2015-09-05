@@ -1,5 +1,8 @@
 #pragma once
 
+#include <complex>
+#include <vector>
+
 namespace fft
 {
 namespace impl

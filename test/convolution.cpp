@@ -20,12 +20,19 @@ std::vector<T> naive_convolve(std::vector<T> first, std::vector<T> second)
 
 TEST(ConvolutionTest, simple_1d_convolution)
 {
-    auto vals = generate(100);
-    auto filter = generate(12);
+    for (auto i : {2u, 3u, 8u, 11u, 16u, 32u, 33u, 63u, 128u, 1024u})
+    {
+        for (auto j : {2u, 2u, 8u, 11u, 12u, 16u, 128u, 256u})
+        {
+            if (j > i) continue;
+            auto vals = generate(i);
+            auto filter = generate(j);
 
-    auto expected = naive_convolve(vals, filter);
-    auto result = convolution::convolve(vals, filter);
+            auto expected = naive_convolve(vals, filter);
+            auto result = convolution::convolve(vals, filter);
 
-    ASSERT_NO_FATAL_FAILURE(equal(expected, result));
+            ASSERT_NO_FATAL_FAILURE(equal(expected, result)) << "sizes: " << i << " and " << j;
+        }
+    }
 }
 
