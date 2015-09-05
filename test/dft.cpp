@@ -57,28 +57,28 @@ TEST_F(DftTest, check_dft_parsevals_property)
 
 TEST_F(DftTest, check_convolution)
 {
-    std::vector<double> vals1(100);
-    std::vector<double> vals2(100);
-    for (auto& elem : vals1) elem = dist(rd);
-    for (auto& elem : vals2) elem = dist(rd);
+    auto N = 100;
+    auto x = generate(N);
+    auto y = generate(N);
+    for (auto i = 2; i < y.size(); ++i)
+        y[i] = 0;
 
-    auto freq_vals1 = dft::dft(vals1);
-    auto freq_vals2 = dft::dft(vals2);
+    auto X = dft::dft(x);
+    auto Y = dft::dft(y);
 
-    auto freq_mult = decltype(freq_vals1)(vals1.size(), 0);
-    for (auto i = 0u; i < freq_vals1.size(); ++i)
-        freq_mult[i] = freq_vals1[i] * freq_vals2[i];
+    auto freq_mult = decltype(X)(N, 0);
+    for (auto i = 0u; i < N; ++i)
+        freq_mult[i] = X[i] * Y[i];
 
     auto inv = dft::real(dft::inv_dft(freq_mult));
 
-    std::reverse(vals2.begin(), vals2.end());
-    auto expected = decltype(vals1)(vals1.size(), 0);
-    for (auto i = 0u; i < vals1.size(); ++i)
-        for (auto j = 0u; j < vals2.size(); ++j)
-            expected[j] += vals1[j] * vals2[i];
+    //convolution
+    auto expected = decltype(x)(N, 0);
+    for (auto n = 0u; n < N; ++n)
+        for (auto l = 0u; l < N; ++l)
+            expected[n] += x[l] * y[(n + N - l) % N];
 
-    //for (auto i = 0u; i < vals1.size(); ++i)
-        //std::cerr << inv[i] << " " << expected[i] << std::endl;
-        //ASSERT_FLOAT_EQ(expected[i], inv[i]) << i;
+    for (auto i = 0u; i < x.size(); ++i)
+        ASSERT_FLOAT_EQ(expected[i], inv[i]) << i;
 }
 
