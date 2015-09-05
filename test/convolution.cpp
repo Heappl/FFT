@@ -13,7 +13,8 @@ std::vector<T> naive_convolve(std::vector<T> first, std::vector<T> second)
     std::vector<T> ret(first.size(), 0);
     for (auto i = 0u; i < first.size(); ++i)
         for (auto j = 0u; j < second.size(); ++j)
-            ret[i] = first[i + j] * second[j];
+            if (i + j < first.size())
+                ret[i] += first[i + j] * second[j];
     return ret;
 }
 
