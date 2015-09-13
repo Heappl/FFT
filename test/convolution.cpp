@@ -36,3 +36,58 @@ TEST(ConvolutionTest, simple_1d_convolution)
     }
 }
 
+template <typename T>
+std::vector<T> naive_convolve_2d(std::vector<T> first, size_t first_width,
+                                 std::vector<T> second, size_t second_width)
+{
+    size_t first_height = first.size() / first_width;
+    size_t second_height = second.size() / second_width;
+    std::vector<T> ret(first.size(), 0);
+
+    for (auto y = 0u; y < first_height; ++y)
+    {
+        for (auto kern_y = 0u; kern_y < second_height; ++kern_y)
+        {
+            if (y + kern_y >= first_height) break;
+            for (auto x = 0u; x < first_width; ++x)
+            {
+                for (auto kern_x = 0u; kern_x < second_width; ++kern_x)
+                {
+                    if (x + kern_x >= first_width) break;
+                    ret[y * first_width + x] +=
+                        first[(y + kern_y) * first_width + x + kern_x]
+                            * second[kern_y * second_width + kern_x];
+                }
+            }
+        }
+    }
+    return ret;
+}
+
+TEST(ConvolutionTest, simple_2d_convolution)
+{
+    for (auto arg_width : {11u, 16u, 33u})
+    {
+        for (auto kern_width : {2u, 3u, 5u, 8u})
+        {
+            if (kern_width >= arg_width) continue;
+            for (auto arg_height : {11u, 16u, 33u})
+            {
+                for (auto kern_height : {2u, 3u, 5u, 8u})
+                {
+                    if (kern_height >= arg_height) continue;
+                    auto vals = generate(arg_height * arg_width);
+                    auto filter = generate(kern_width * kern_height);
+
+                    auto expected = naive_convolve_2d(vals, arg_width, filter, kern_width);
+                    auto result = convolution::convolve_2d(vals, arg_width, filter, kern_width);
+
+                    ASSERT_NO_FATAL_FAILURE(equal(expected, result))
+                        << "sizes: " << arg_height << "x" << arg_width << " and "
+                                     << kern_height << "x" << kern_width;
+                }
+            }
+        }
+    }
+}
+

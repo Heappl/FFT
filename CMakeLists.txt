@@ -4,7 +4,7 @@ project (FFT)
 set(dir ${PROJECT_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
 set(LIBRARY_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
-set(CMAKE_CXX_FLAGS "--std=c++11")
+set(CMAKE_CXX_FLAGS "--std=c++11 -O3")
 
 include_directories(${PROJECT_SOURCE_DIR}/gtest-1.7.0/include)
 include_directories(${PROJECT_SOURCE_DIR}/include)
