@@ -17,7 +17,7 @@ TEST_F(FFTTest, check_fft_two_elements_vs_dft)
 {
     auto vals = generate(2);
     auto fft_result = fft::fft(vals);
-    auto dft_result = dft::dft(vals);
+    auto dft_result = dft::dft(dft::real2complex(vals));
     ASSERT_NO_FATAL_FAILURE(equal(dft_result, fft_result));
 }
 
@@ -25,7 +25,7 @@ TEST_F(FFTTest, check_fft_four_elements_vs_dft)
 {
     auto vals = generate(4);
     auto fft_result = fft::fft(vals);
-    auto dft_result = dft::dft(vals);
+    auto dft_result = dft::dft(dft::real2complex(vals));
     ASSERT_NO_FATAL_FAILURE(equal(dft_result, fft_result));
 }
 
@@ -42,7 +42,7 @@ TEST_F(FFTTest, check_fft_different_sizes_vs_dft)
     {
         auto vals = generate(i);
         auto fft_result = fft::fft(vals);
-        auto dft_result = dft::dft(vals);
+        auto dft_result = dft::dft(dft::real2complex(vals));
         ASSERT_NO_FATAL_FAILURE(equal(dft_result, fft_result)) << " for size of " << i;
     }
 }
