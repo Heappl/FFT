@@ -99,21 +99,21 @@ std::vector<T> convolve_2d(
     if ((first_width < second_width) or (first_height < second_height))
         throw std::runtime_error("kernel dimension is bigger than input's");
 
-    auto height = first_height + second_height;
-    auto width = first_width + second_width;
+    auto height = detail::nearest_power_of_2(first_height + second_height);
+    auto width = detail::nearest_power_of_2(first_width + second_width);
 
     first = detail::resize_matrix(first, first_width, height, width);
     second = detail::resize_matrix(second, second_width, height, width);
     second = detail::revert_matrix(second, width);
     second = detail::rotate_matrix_by_one(second, width);
 
-    auto freq_first = dft::dft_2d(dft::real2complex(first), width);
-    auto freq_second = dft::dft_2d(dft::real2complex(second), width);
+    auto freq_first = fft::fft_2d(dft::real2complex(first), width);
+    auto freq_second = fft::fft_2d(dft::real2complex(second), width);
 
     for (auto i = 0u; i < first.size(); ++i)
         freq_first[i] *= freq_second[i];
     
-    return detail::resize_matrix(dft::real(dft::inv_dft_2d(freq_first, width)),
+    return detail::resize_matrix(dft::real(fft::inv_fft_2d(freq_first, width)),
                                  width, first_height, first_width);
 }
 
