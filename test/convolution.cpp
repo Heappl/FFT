@@ -66,12 +66,12 @@ std::vector<T> naive_convolve_2d(std::vector<T> first, size_t first_width,
 
 TEST(ConvolutionTest, simple_2d_convolution)
 {
-    for (auto arg_width : {11u, 16u, 33u})
+    for (auto arg_width : {11u, 16u})
     {
         for (auto kern_width : {2u, 3u, 5u, 8u})
         {
             if (kern_width >= arg_width) continue;
-            for (auto arg_height : {11u, 16u, 33u})
+            for (auto arg_height : {11u, 16u})
             {
                 for (auto kern_height : {2u, 3u, 5u, 8u})
                 {

@@ -76,8 +76,8 @@ std::vector<T> convolve(std::vector<T> first,
     std::reverse(second.begin(), second.end());
     std::rotate(second.begin(), second.end() - 1, second.end());
 
-    auto freq_first = fft::fft(first);
-    auto freq_second = fft::fft(second);
+    auto freq_first = fft::fft(dft::real2complex(first));
+    auto freq_second = fft::fft(dft::real2complex(second));
 
     for (auto i = 0u; i < first.size(); ++i)
         freq_first[i] *= freq_second[i];
