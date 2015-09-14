@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <limits>
+#include <chrono>
 
 template <typename T>
 std::vector<T> naive_convolve(std::vector<T> first, std::vector<T> second)
@@ -89,5 +90,28 @@ TEST(ConvolutionTest, simple_2d_convolution)
             }
         }
     }
+}
+
+TEST(ConvolutionTest, DISABLED_big_2d_convolution)
+{
+    auto height = 800u;
+    auto width = 800u;
+    auto kern_width = 199u;
+    auto kern_height = 199u;
+    auto vals = generate(height * width);
+    auto filter = generate(kern_width * kern_height);
+
+    auto t1 = std::chrono::system_clock::now();
+    auto expected = naive_convolve_2d(vals, width, filter, kern_width);
+    auto t2 = std::chrono::system_clock::now();
+    auto result = convolution::convolve_2d(vals, width, filter, kern_width);
+    auto t3 = std::chrono::system_clock::now();
+
+    auto elapsed_naive = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    auto elapsed_fft = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2);
+    std::cerr << "elapsed naive: " << elapsed_naive.count() << std::endl;
+    std::cerr << "elapsed fft: " << elapsed_fft.count() << std::endl;
+
+    ASSERT_NO_FATAL_FAILURE(equal(expected, result));
 }
 
