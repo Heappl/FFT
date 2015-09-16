@@ -94,10 +94,10 @@ TEST(ConvolutionTest, simple_2d_convolution)
 
 TEST(ConvolutionTest, DISABLED_big_2d_convolution)
 {
-    auto height = 800u;
-    auto width = 800u;
-    auto kern_width = 199u;
-    auto kern_height = 199u;
+    auto height = 500u;
+    auto width = 500u;
+    auto kern_width = 141u;
+    auto kern_height = 141u;
     auto vals = generate(height * width);
     auto filter = generate(kern_width * kern_height);
 
