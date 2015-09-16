@@ -2,7 +2,6 @@
 
 #include <complex>
 #include <vector>
-#include <iostream>
 #include "matrix.hpp"
 
 namespace fft
@@ -14,54 +13,38 @@ using ComplexVec=std::vector<std::complex<T>>;
 namespace impl
 {
 
-template <typename T, bool is_inverse, typename It, typename DestIt>
-void fft_impl(It begin, It end, size_t step, DestIt dest)
+template <bool is_inverse, bool is_first, typename T>
+auto fft_impl(ComplexVec<T> input) -> decltype(input)
 {
     static T pi = T(3.141592653589793238463);
     static T pi2 = pi * 2.0;
     static std::complex<T> ci(0, 1);
     static std::complex<T> mult = (is_inverse) ? ci : -ci;
-    size_t size = (end - begin) / step;
-    if (size == 0) return;
-    if (size == 1) {
-        *dest = *begin;
-        return;
+    if (input.size() == 1) return input;
+    assert(input.size() % 2 == 0);
+
+    T N = input.size();
+    auto even = decltype(input)(input.size() / 2);
+    auto odd = decltype(input)(input.size() / 2);
+
+    for (auto i = 0; i < even.size(); ++i)
+    {
+        even[i] = input[2 * i];
+        odd[i] = input[2 * i + 1];
     }
-    assert(size % 2 == 0);
-    size_t half = size / 2;
+
+    auto even_result = fft_impl<is_inverse, false>(even);
+    auto odd_result = fft_impl<is_inverse, false>(odd);
+
+    ComplexVec<T> result(input.size());
+    for (auto i = 0; i < result.size(); ++i)
+    {
+        result[i] = odd_result[i % odd.size()] * exp(mult * T(i) * pi2 / N)
+            + even_result[i % even.size()];
+        if (is_inverse and is_first) result[i] /= N;
+    }
     
-    auto next_step = 2 * step;
-    fft_impl<T, is_inverse>(begin, begin + half * next_step, next_step, dest);
-    fft_impl<T, is_inverse>(begin + step, begin + step + half * next_step, next_step, dest + half); 
-
-    auto dest_it = dest;
-    for (auto i = 0; i < half; ++i)
-    {
-        auto& dst = *dest_it;
-        auto& odd = *(dest_it + half);
-        dst = odd * exp(mult * T(i) * pi2 / T(size)) + dst;
-        dest_it++;
-    }
-    for (auto i = half; i < size; ++i)
-    {
-        auto& dst = *dest_it;
-        auto& prev = *(dest_it - half);
-        dst = prev - dst * exp(mult * T(i - half) * pi2 / T(size)) + dst * exp(mult * T(i) * pi2 / T(size));
-
-        dest_it++;
-    }
-    if (is_inverse and (step == 1))
-        for (auto it = dest; it != dest + size; ++it)
-            *it /= size;
-}
-
-
-template <bool is_inverse, typename T>
-auto fft_impl(ComplexVec<T> input) -> decltype(input)
-{
-    ComplexVec<T> dest(input.size());
-    fft_impl<T, is_inverse>(input.begin(), input.end(), 1u, dest.begin());
-    return dest;
+    return result;
 }
 
 template <bool is_inverse, typename T>
@@ -76,7 +59,7 @@ ComplexVec<T> fft_2d_impl(ComplexVec<T> input, size_t width)
             for (auto row = 0u; row < height; ++row)
             {
                 ComplexVec<T> row_data(input.begin() + row * width, input.begin() + (row + 1) * width);
-                auto row_result = fft_impl<is_inverse>(row_data);
+                auto row_result = fft_impl<is_inverse, true>(row_data);
                 result.insert(result.end(), row_result.begin(), row_result.end());
             }
             return result;
@@ -94,13 +77,13 @@ ComplexVec<T> fft_2d_impl(ComplexVec<T> input, size_t width)
 template <typename T>
 ComplexVec<T> fft(ComplexVec<T> input)
 {
-    return impl::fft_impl<false>(input);
+    return impl::fft_impl<false, true>(input);
 }
 
 template <typename T>
 auto inv_fft(ComplexVec<T> input) -> decltype(input)
 {
-    return impl::fft_impl<true>(input);
+    return impl::fft_impl<true, true>(input);
 }
 
 template <typename T>
