@@ -1,0 +1,3 @@
+Implementation of Cooley–Tukey algorithm to compute discrete Fourier Transform.
+The implementation is very simple, but unomptimized. However it should be fast enough for many applications.
+The algorithm is tested with DFT implentation, as well as with implementation of convolution.
