@@ -11,18 +11,11 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory (gtest-1.7.0)
 
-add_library(
-    fft
-    STATIC
-    src/fft.cpp
-    src/matrix.cpp
-)
-
 add_executable(
     test
     test/dft.cpp
     test/convolution.cpp
     test/fft.cpp
 )
-target_link_libraries(test gtest gtest_main fft)
+target_link_libraries(test gtest gtest_main)
 
